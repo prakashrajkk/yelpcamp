@@ -1,20 +1,19 @@
 <% layout('layout/boilerplate') %>
 
-<!-- Inject GeoJSON and MapTiler API Key -->
+
 <script>
   const campgrounds = <%- JSON.stringify(campgroundsGeoJSON) %>;
   const maptilerApiKey = "<%= maptilerKey %>";
 </script>
 
-<!-- Map Container -->
-<div id="map" style="width: 100%; height: 500px;"></div>
+
+
+  <div id="map" style="width: 100%; height: 500px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);"></div>
 
 <h1>All Campgrounds</h1>
-<div>
-  <a class="btn btn-success mb-3" href="/campgrounds/new">Add Campground</a>
-</div>
 
-<!-- List of Campgrounds -->
+
+
 <% for (let campground of campgrounds) { %>
   <div class="card mb-3">
     <div class="row">
@@ -35,5 +34,6 @@
   </div>
 <% } %>
 
-<!-- Map Cluster JS -->
+
+
 <script src="/javascripts/clusterMap.js" defer></script>
