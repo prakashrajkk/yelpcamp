@@ -23,7 +23,7 @@ module.exports.index = async (req, res) => {
   res.render("campgrounds", {
     campgrounds,
     campgroundsGeoJSON,
-    maptilerKey: process.env.MAPTILER_API_KEY // ✅ this was missing
+    maptilerKey: process.env.MAPTILER_API_KEY 
   });
 };
 
@@ -37,10 +37,8 @@ module.exports.create = async (req, res, next) => {
   try {
     console.log("API KEY:", process.env.MAPTILER_API_KEY);
 
-    // Get location from form
     const geoData = await maptilerClient.geocoding.forward(req.body.location, { limit: 1 });
 
-    // Create new campground manually from flat request body
     const campground = new campGround({
       title: req.body.title,
       location: req.body.location,
@@ -52,7 +50,6 @@ module.exports.create = async (req, res, next) => {
     });
 
     await campground.save();
-    // console.log(campground);
     req.flash('success', 'Successfully added new campground!');
     res.redirect(`/campgrounds/${campground._id}`);
   } catch (e) {
@@ -77,8 +74,8 @@ module.exports.show = async (req, res) => {
   }
 
   res.render('show', {
-    campground, // ✅ send campground data
-    maptilerKey: process.env.MAPTILER_API_KEY // ✅ also send your API key
+    campground, 
+    maptilerKey: process.env.MAPTILER_API_KEY 
   });
 };
 

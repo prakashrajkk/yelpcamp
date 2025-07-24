@@ -13,7 +13,6 @@ router.get("/",campgrounds.index);
 
 router.get("/new",isLoggedIn,campgrounds.new);
 
-
 router.post("/", isLoggedIn,wrapAsync(campgrounds.create));
 
 router.get("/:id", wrapAsync(campgrounds.show));

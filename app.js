@@ -11,16 +11,15 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 
+// Route files
 const campgroundRoutes = require('./routers/campground');
 const reviewRoutes = require('./routers/reviews');
 const userRoutes = require('./routers/user');
 
-// --------------------
-// MongoDB connection
-// --------------------
-mongoose.connect('mongodb://localhost:27017/yelp-app')
+// 📦 Connect to MongoDB Atlas using .env variable
+mongoose.connect(process.env.DATABASE_URL)
   .then(() => {
-    console.log("✅ MongoDB connected");
+    console.log("✅ Connected to MongoDB Atlas");
   })
   .catch((err) => {
     console.log("❌ MongoDB connection error:", err);
@@ -28,23 +27,17 @@ mongoose.connect('mongodb://localhost:27017/yelp-app')
 
 const app = express();
 
-// --------------------
-// View engine setup
-// --------------------
+// Set up EJS and views
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// --------------------
-// Middleware
-// --------------------
+// Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --------------------
-// Session + Flash
-// --------------------
+// Session config
 const sessionConfig = {
   secret: 'thisshouldbeabettersecret!',
   resave: false,
@@ -58,57 +51,43 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
-// --------------------
-// Passport Configuration
-// --------------------
+// Passport config
 app.use(passport.initialize());
-app.use(passport.session()); // ❗ this must come before res.locals
+app.use(passport.session()); 
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
+// Flash middleware
 app.use((req, res, next) => {
-  res.locals.currentUser = req.user; // ✅ defined after passport.session()
+  res.locals.currentUser = req.user;
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
   next();
 });
 
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
-// --------------------
-// Global Template Variables
-// --------------------
-
-
-// --------------------
 // Routes
-// --------------------
 app.use('/campgrounds', campgroundRoutes);
 app.use('/campgrounds/:id/reviews', reviewRoutes);
 app.use('/', userRoutes);
 
-// --------------------
 // Home route
-// --------------------
 app.get('/home', (req, res) => {
   res.render('home');
 });
 
 app.get('/test-user', (req, res) => {
-   res.send('hello')
+  res.send('hello');
 });
-// --------------------
-// Error Handler
-// --------------------
+
+// Error handler
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) err.message = 'Oh No, Something Went Wrong!';
   res.status(statusCode).render('alert', { err });
 });
 
-// --------------------
-// Start Server
-// --------------------
+// Start the server
 app.listen(8080, () => {
   console.log('🚀 Server is running on port 8080');
 });
