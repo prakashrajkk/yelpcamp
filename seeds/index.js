@@ -1,15 +1,16 @@
-const mongoose = require("mongoose");
-const cities = require("./cities");
-const { places, descriptors } = require("./seedHelpers");
+require('dotenv').config();
+const mongoose = require('mongoose');
+const cities = require('./cities');
+const { places, descriptors } = require('./seedHelpers');
 const Campground = require('../models/campGround');
 
-mongoose
-  .connect("mongodb://127.0.0.1:27017/yelp-app")
+// Connect to MongoDB Atlas
+mongoose.connect(process.env.DATABASE_URL)
   .then(() => {
-    console.log("Successfully connected to MongoDB!");
+    console.log("✅ Connected to MongoDB Atlas (Seeding)");
   })
   .catch((err) => {
-    console.log("Connection failed!");
+    console.log("❌ MongoDB connection error (Seeding):");
     console.error(err);
   });
 
@@ -19,27 +20,27 @@ const seedDB = async () => {
   await Campground.deleteMany({});
   for (let i = 0; i < 900; i++) {
     const random1000 = Math.floor(Math.random() * 1000);
-    const random = Math.floor(Math.random() * 20) + 10;
+    const randomPrice = Math.floor(Math.random() * 20) + 10;
     const camp = new Campground({
-      author:'68720b40eca5d822c6c814ff',
+      author: '68720b40eca5d822c6c814ff', // use valid ObjectId
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
       title: `${sample(descriptors)} ${sample(places)}`,
-          geometry: {
-                type: "Point",
-                coordinates: [
-                    cities[random1000].longitude,
-                    cities[random1000].latitude,
-                ]
-            },
-      image: "https://picsum.photos/200/300",
-      price: random,
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, quo. Quidemearum, natus obcaecati et id sunt iure odio suscipit quis necessitatibus fugaveritatis placeat laudantium fugiat sed sapiente incidunt!",
+      geometry: {
+        type: 'Point',
+        coordinates: [
+          cities[random1000].longitude,
+          cities[random1000].latitude
+        ]
+      },
+      image: 'https://picsum.photos/400/300',
+      price: randomPrice,
+      description: 'A beautiful campground with stunning views and great amenities.'
     });
     await camp.save();
   }
 };
 
 seedDB().then(() => {
+  console.log('✅ Database seeded successfully!');
   mongoose.connection.close();
 });

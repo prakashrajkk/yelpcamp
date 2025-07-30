@@ -1,76 +1,84 @@
-<% layout('layout/boilerplate')%>
+<% layout('layout/boilerplate') %>
 <link rel="stylesheet" href="/stylesheet/star.css">
-
+<link rel="stylesheet" href="/stylesheets/show.css">
 <script>
   const maptilerApiKey = "<%= maptilerKey %>";
   const campground = <%- JSON.stringify(campground) %>;
 </script>
+
 <div class="row">
-    <div class="col-6">
-        <div class="card mb-3">
-<div id="map" style="width:100%; height:400px;"></div> <!-- ✅ correct -->
-            <img src="<%= campground.image%>" class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title"><%= campground.title%></h5>
-                <p class="card-text"><%= campground.description%></p>
-            </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-muted"><%= campground.location%></li>
-                <li class="list-group-item ">Submitted By:<%= campground.author.username%></li>
-                <li class="list-group-item">$<%= campground.price%>/night</li>
-            </ul>
-            <!-- <% if(currentUser && campground.author.equals(currentUser)) {%> -->
-            <div class="card-body">
-                <a class="card-link btn btn-info" href="/campgrounds/<%=campground._id%>/edit">Edit</a>
-                <form class="d-inline" action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
-                    <button class="btn btn-danger">Delete</button>
-                </form>
-            </div>
-            <!-- <% } %> -->
-            <div class="card-footer text-muted">
-                2 days ago
-            </div>
-        </div>
+  <!-- Left Column: Campground Info -->
+  <div class="col-6">
+    <div class="card mb-3">
+      <div id="map" style="width:100%; height:400px;"></div>
+      <img src="<%= campground.image %>" class="card-img-top" alt="Campground image">
+      <div class="card-body">
+        <h5 class="card-title"><%= campground.title %></h5>
+        <p class="card-text"><%= campground.description %></p>
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item text-muted"><%= campground.location %></li>
+        <li class="list-group-item">
+          Submitted By: <%= campground.author?.username || "Unknown" %>
+        </li>
+        <li class="list-group-item">$<%= campground.price %>/night</li>
+      </ul>
 
-    </div>
-    <% if(currentUser) {%>
-    <div class="col-6">
-        <h2>Leave a Review</h2>
-        <form action="/campgrounds/<%=campground._id%>/reviews" method="POST" class="mb-3 validated-form" novalidate>
-            <div class="mb-3">
-                <label class="form-label" for="rating">Rating</label>
-<input class="form-range" type="range" min="1" max="5" name="review[rating]" id="rating">
-            </div>            
-            <div class="mb-3">
-                <label class="form-label" for="body">Review</label>
-                <textarea class="form-control" name="review[body]" id="body" cols="30" rows="3" required></textarea>
-                <div class="valid-feedback">
-                    Looks good!
-                </div>
-            </div>
-            <button class="btn btn-success">Submit</button>
+      <% if (currentUser && campground.author?.equals(currentUser._id)) { %>
+      <div class="card-body">
+        <a class="card-link btn btn-info" href="/campgrounds/<%= campground._id %>/edit">Edit</a>
+        <form class="d-inline" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+          <button class="btn btn-danger">Delete</button>
         </form>
-            <% } %>
+      </div>
+      <% } %>
 
-        <% for(let review of campground.reviews) { %>
-        <div class="card mb-3 ">
-            <div class="card-body">
-                 <h6 class="card-subtitle mb-2 text-muted"><%= review.author.username %></h6>
-                  <p class="starability-result" data-rating="<%= review.rating %>">
-                 Rated: <%= review.rating %> stars
-               </p>
-                <p class="card-text">Review: <%= review.body %></p>
-             <% if(currentUser && campground.author.equals(currentUser)) { %>                
-                <form action="/campgrounds/<%=campground._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
-                    <button class="btn btn-sm btn-danger">Delete</button>
-                </form>
-                <% } %>
-            </div>
-        </div>
+      <div class="card-footer text-muted">2 days ago</div>
+    </div>
+  </div>
+
+  <!-- Right Column: Reviews -->
+  <% if (currentUser) { %>
+  <div class="col-6">
+    <h2>Leave a Review</h2>
+    <form action="/campgrounds/<%= campground._id %>/reviews" method="POST" class="mb-3 validated-form" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="rating">Rating</label>
+        <input class="form-range" type="range" min="1" max="5" name="review[rating]" id="rating">
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="body">Review</label>
+        <textarea class="form-control" name="review[body]" id="body" cols="30" rows="3" required></textarea>
+        <div class="valid-feedback">Looks good!</div>
+      </div>
+      <button class="btn btn-success">Submit</button>
+    </form>
+  </div>
+  <% } %>
+
+  <!-- Reviews Display -->
+  <% for (let review of campground.reviews) { %>
+  <div class="col-6">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h6 class="card-subtitle mb-2 text-muted">
+          <%= review.author?.username || "Anonymous" %>
+        </h6>
+        <p class="starability-result" data-rating="<%= review.rating %>">
+          Rated: <%= review.rating %> stars
+        </p>
+        <p class="card-text">Review: <%= review.body %></p>
+
+        <% if (currentUser && review.author?.equals(currentUser._id)) { %>
+        <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+          <button class="btn btn-sm btn-danger">Delete</button>
+        </form>
         <% } %>
 
+      </div>
+    </div>
+  </div>
+  <% } %>
 </div>
 
-
-
-  <script src="/javascripts/showPageMap.js"></script>
+<script src="/javascripts/showPageMap.js"></script>

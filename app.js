@@ -17,13 +17,17 @@ const reviewRoutes = require('./routers/reviews');
 const userRoutes = require('./routers/user');
 
 // 📦 Connect to MongoDB Atlas using .env variable
+
+
 mongoose.connect(process.env.DATABASE_URL)
   .then(() => {
-    console.log("✅ Connected to MongoDB Atlas");
+    console.log("✅ Connected to MongoDB:", mongoose.connection.name); // should log 'yelp-app'
   })
   .catch((err) => {
-    console.log("❌ MongoDB connection error:", err);
+    console.error("❌ MongoDB connection error:", err);
   });
+
+
 
 const app = express();
 
