@@ -37,7 +37,7 @@ router.post(
     }),
     (req, res) => {
         req.flash('success', 'Successfully logged in!');
-        res.redirect('/home'); // ✅ fixed from res.render('/campgrunds')
+        res.redirect('/home');
     }
 );
 

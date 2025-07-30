@@ -11,37 +11,32 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 
-// Route files
 const campgroundRoutes = require('./routers/campground');
 const reviewRoutes = require('./routers/reviews');
 const userRoutes = require('./routers/user');
 
-// 📦 Connect to MongoDB Atlas using .env variable
 
 
 mongoose.connect(process.env.DATABASE_URL)
   .then(() => {
-    console.log("✅ Connected to MongoDB:", mongoose.connection.name); // should log 'yelp-app'
+    console.log(" Connected to MongoDB:", mongoose.connection.name); // should log 'yelp-app'
   })
   .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
+    console.error(" MongoDB connection error:", err);
   });
 
 
 
 const app = express();
 
-// Set up EJS and views
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session config
 const sessionConfig = {
   secret: 'thisshouldbeabettersecret!',
   resave: false,
@@ -55,14 +50,12 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
-// Passport config
 app.use(passport.initialize());
 app.use(passport.session()); 
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// Flash middleware
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   res.locals.success = req.flash('success');
@@ -70,12 +63,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
 app.use('/campgrounds', campgroundRoutes);
 app.use('/campgrounds/:id/reviews', reviewRoutes);
 app.use('/', userRoutes);
 
-// Home route
 app.get('/home', (req, res) => {
   res.render('home');
 });
@@ -84,14 +75,12 @@ app.get('/test-user', (req, res) => {
   res.send('hello');
 });
 
-// Error handler
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) err.message = 'Oh No, Something Went Wrong!';
   res.status(statusCode).render('alert', { err });
 });
 
-// Start the server
 app.listen(8080, () => {
-  console.log('🚀 Server is running on port 8080');
+  console.log(' Server is running on port 8080');
 });

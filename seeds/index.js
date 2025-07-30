@@ -7,10 +7,10 @@ const Campground = require('../models/campGround');
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.DATABASE_URL)
   .then(() => {
-    console.log("✅ Connected to MongoDB Atlas (Seeding)");
+    console.log(" Connected to MongoDB Atlas (Seeding)");
   })
   .catch((err) => {
-    console.log("❌ MongoDB connection error (Seeding):");
+    console.log(" MongoDB connection error (Seeding):");
     console.error(err);
   });
 

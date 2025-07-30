@@ -12,14 +12,14 @@ body {
 }
 
 .card {
-  background-color: rgba(0, 0, 0, 0.05); /* nearly invisible black */
+  background-color: rgba(0, 0, 0, 0.05); 
   color: white;
   border-radius: 1rem;
   padding: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1); /* subtle white border */
-  backdrop-filter: blur(1px); /* very slight blur */
-  -webkit-backdrop-filter: blur(1px); /* Safari support */
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.05); /* soft glow effect */
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  backdrop-filter: blur(1px); 
+  -webkit-backdrop-filter: blur(1px); 
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.05); 
 }
 
 
